@@ -1,3 +1,3 @@
-export class CreateSpotDto {
+export class CreateSpotRequest {
   name: string;
 }
