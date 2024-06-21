@@ -51,39 +51,42 @@ export class EventsService {
       throw new Error(`Spots ${notFoundSpotsName.join(',')} not found`);
     }
     try {
-      const tickets = this.prismaService.$transaction(async (prisma) => {
-        await prisma.reservationHistory.createMany({
-          data: spots.map((spot) => ({
-            spotId: spot.id,
-            ticketKind: dto.ticket_kind,
-            email: dto.email,
-            status: TicketStatus.reserved,
-          })),
-        });
-        await prisma.spot.updateMany({
-          where: {
-            id: {
-              in: spots.map((spot) => spot.id),
-            },
-          },
-          data: {
-            status: SpotStatus.reserved,
-          },
-        });
-
-        const ticketsTransaction = await Promise.all(
-          spots.map((spot) =>
-            prisma.ticket.create({
-              data: {
-                spotId: spot.id,
-                ticketKind: dto.ticket_kind,
-                email: dto.email,
+      const tickets = await this.prismaService.$transaction(
+        async (prisma) => {
+          await prisma.reservationHistory.createMany({
+            data: spots.map((spot) => ({
+              spotId: spot.id,
+              ticketKind: dto.ticket_kind,
+              email: dto.email,
+              status: TicketStatus.reserved,
+            })),
+          });
+          await prisma.spot.updateMany({
+            where: {
+              id: {
+                in: spots.map((spot) => spot.id),
               },
-            }),
-          ),
-        );
-        return ticketsTransaction;
-      });
+            },
+            data: {
+              status: SpotStatus.reserved,
+            },
+          });
+
+          const ticketsTransaction = await Promise.all(
+            spots.map((spot) =>
+              prisma.ticket.create({
+                data: {
+                  spotId: spot.id,
+                  ticketKind: dto.ticket_kind,
+                  email: dto.email,
+                },
+              }),
+            ),
+          );
+          return ticketsTransaction;
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted },
+      );
       return tickets;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
