@@ -1,0 +1,89 @@
+# Listar todos os eventos
+GET http://localhost:3001/eventos
+
+###
+# Criar um novo evento
+# @name criarEvento
+POST http://localhost:3001/eventos
+Content-Type: application/json
+
+{
+    "nome": "Novo evento",
+    "descricao": "This is a new event",
+    "data": "2017-01-01T00:00:00.000Z",
+    "preco": 100
+}
+
+###
+# Obter o ID do evento criado
+@eventoId = {{ criarEvento.response.body.id }}
+
+###
+# Obter os detalhes do evento específico
+GET http://localhost:3001/eventos/{{eventoId}}
+
+###
+# Atualizar o evento
+PATCH http://localhost:3001/eventos/{{eventoId}}
+Content-Type: application/json
+
+{
+    "nome": "Updated Event Name",
+    "descricao": "This is an updated event",
+    "data": "2017-01-02T00:00:00.000Z",
+    "preco": 150
+}
+
+###
+# Deletar o evento
+DELETE http://localhost:3001/eventos/{{eventoId}}
+
+###
+# Listar os assentos do evento
+GET http://localhost:3001/eventos/{{eventoId}}/assentos
+
+###
+GET http://localhost:3001/eventos/{{eventoId}}/assentos/{{assentoId}}
+
+
+###
+# Criar um novo spot
+# @name criarAssento
+POST http://localhost:3001/eventos/{{eventoId}}/assentos
+Content-Type: application/json
+
+{
+    "nome": "A22"
+}
+
+###
+# Obter o ID do spot criado
+@assentoId = {{ criarAssento.response.body.id }}
+###
+
+GET http://localhost:3001/eventos/{{eventoId}}/assentos/{{assentoId}}
+
+###
+# Atualizar o spot
+PATCH http://localhost:3001/eventos/{{eventoId}}/assentos/{{assentoId}}
+Content-Type: application/json
+
+{
+    "nome": "Nome atualizado do assento"
+}
+###
+DELETE http://localhost:3001/eventos/{{eventoId}}/assentos/{{assentoId}}
+
+
+###
+@nomeDoAssento = {{ criarAssento.response.body.name }}
+
+###
+POST http://localhost:3001/eventos/{{eventoId}}/reservar
+Content-Type: application/json
+
+{
+    "assentos": ["{{nomeDoAssento}}"],
+    "ticket_kind": "full",
+    "email": "test@test.com"
+}
