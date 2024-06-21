@@ -1,0 +1,89 @@
+# Listar todos os eventos
+GET http://localhost:3000/events
+
+###
+# Criar um novo evento
+# @name createEvent
+POST http://localhost:3000/events
+Content-Type: application/json
+
+{
+    "name": "New Event",
+    "description": "This is a new event",
+    "date": "2017-01-01T00:00:00.000Z",
+    "price": 100
+}
+
+###
+# Obter o ID do evento criado
+@eventId = {{ createEvent.response.body.id }}
+
+###
+# Obter os detalhes do evento específico
+GET http://localhost:3000/events/{{eventId}}
+
+###
+# Atualizar o evento
+PATCH http://localhost:3000/events/{{eventId}}
+Content-Type: application/json
+
+{
+    "name": "Updated Event Name",
+    "description": "This is an updated event",
+    "date": "2017-01-02T00:00:00.000Z",
+    "price": 150
+}
+
+###
+# Deletar o evento
+DELETE http://localhost:3000/events/{{eventId}}
+
+###
+# Listar os spots do evento
+GET http://localhost:3000/events/{{eventId}}/spots
+
+###
+GET http://localhost:3000/events/{{eventId}}/spots/{{spotId}}
+
+
+###
+# Criar um novo spot
+# @name createSpot
+POST http://localhost:3000/events/{{eventId}}/spots
+Content-Type: application/json
+
+{
+    "name": "A22"
+}
+
+###
+# Obter o ID do spot criado
+@spotId = {{ createSpot.response.body.id }}
+###
+
+GET http://localhost:3000/events/{{eventId}}/spots/{{spotId}}
+
+###
+# Atualizar o spot
+PATCH http://localhost:3000/events/{{eventId}}/spots/{{spotId}}
+Content-Type: application/json
+
+{
+    "name": "Updated Spot Name"
+}
+###
+DELETE http://localhost:3000/events/{{eventId}}/spots/{{spotId}}
+
+
+###
+@spotName = {{ createSpot.response.body.name }}
+
+###
+POST http://localhost:3000/events/{{eventId}}/reserve
+Content-Type: application/json
+
+{
+    "spots": ["{{spotName}}"],
+    "ticket_kind": "full",
+    "email": "test@test.com"
+}
