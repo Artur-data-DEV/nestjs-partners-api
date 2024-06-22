@@ -53,7 +53,7 @@ POST http://localhost:3001/eventos/{{eventoId}}/assentos
 Content-Type: application/json
 
 {
-    "nome": "A22"
+    "nome": "A6"
 }
 
 ###
@@ -81,9 +81,10 @@ DELETE http://localhost:3001/eventos/{{eventoId}}/assentos/{{assentoId}}
 ###
 POST http://localhost:3001/eventos/{{eventoId}}/reservar
 Content-Type: application/json
+X-Api-Token: 000
 
 {
     "assentos": ["{{nomeDoAssento}}"],
-    "ticket_kind": "full",
+    "tipo_ingresso": "inteira",
     "email": "test@test.com"
 }
